@@ -28,7 +28,7 @@ class UserTest extends TestCase
 
         $resposta =  (array) json_decode($this->response->content());
 
-        echo $resposta.$this->toString();
+        //echo $resposta.$this->toString();
 
         $this->assertArrayHasKey('name', $resposta);
         $this->assertArrayHasKey('email', $resposta);
