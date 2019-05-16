@@ -12,6 +12,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
+
     public function testCreateUser()
     {
         $dados = [
@@ -28,11 +29,26 @@ class UserTest extends TestCase
 
         $resposta =  (array) json_decode($this->response->content());
 
-        //echo $resposta.$this->toString();
+        $this->assertArrayHasKey('name', $resposta);
+        $this->assertArrayHasKey('email', $resposta);
+        $this->assertArrayHasKey('id', $resposta);
+        //$this->assertArrayHasKey('password', $resposta);
+    }
+
+    public function testViewUser()
+    {
+        $user = \App\User::first();
+
+        echo "\nPASSOU POR AQUI..............";
+
+        $this->get('/api/user/'.$user->id);
+
+        $this->assertResponseOk();
+
+        $resposta =  (array) json_decode($this->response->content());
 
         $this->assertArrayHasKey('name', $resposta);
         $this->assertArrayHasKey('email', $resposta);
-        //$this->assertArrayHasKey('password', $resposta);
         $this->assertArrayHasKey('id', $resposta);
     }
 }

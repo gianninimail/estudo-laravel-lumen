@@ -18,8 +18,7 @@ class UserController extends Controller
         //
     }
 
-    //
-
+    //GUARDA OBJETO DO BANCO DE DADOS
     public function store(Request $request) {
 
         $this->validate($request, [
@@ -32,5 +31,11 @@ class UserController extends Controller
         $usuario->save();
 
         return $usuario;
+    }
+
+    //RECUPERA UM OBJETO DO BANCO DE DADOS
+    public function view($id) {
+
+        return User::find($id);
     }
 }
