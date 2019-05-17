@@ -38,4 +38,24 @@ class UserController extends Controller
 
         return User::find($id);
     }
+
+    //ALTERA OBJETO DO BANCO DE DADOS
+    public function update(Request $request, $id) {
+
+        $this->validate($request, [
+            'name' => 'required|max:255',
+            'email' => 'required|unique:users|max:255',
+            'password' => 'required|max:255'
+        ]);
+
+        $user = User::find($id);
+
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->password = $request->input('password');
+
+        $user->update();
+
+        return $user;
+    }
 }
