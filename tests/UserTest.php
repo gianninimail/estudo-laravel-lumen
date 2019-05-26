@@ -18,7 +18,8 @@ class UserTest extends TestCase
         $dados = [
             'name' => 'Teste 00',
             'email' => 'teste321321@gmail.com',
-            'password' => '123'
+            'password' => '123',
+            'password_confirmation' => '123'
         ];
 
         $this->post('/api/user', $dados);
@@ -56,14 +57,15 @@ class UserTest extends TestCase
         echo "\nPASSOU POR AQUI......Teste de Visualização........\n";
     }
 
-    public function testAlterUser()
+    public function testUpdateUser()
     {
         $user = \App\User::first();
 
         $dados = [
             'name' => 'Nome alterado de Teste',
             'email' => 't@gmail.com',
-            'password' => '123654'
+            'password' => '12345',
+            'password_confirmation' => '12345'
         ];
 
         $this->put('/api/user/'.$user->id, $dados);
@@ -85,5 +87,66 @@ class UserTest extends TestCase
         ]);
 
         echo "\nPASSOU POR AQUI......Teste de Alteração........\n";
+    }
+
+    public function testUpdateUserNoPassword()
+    {
+        $user = \App\User::first();
+
+        $dados = [
+            'name' => 'Nome alterado de Teste',
+            'email' => 't@gmail.com'
+        ];
+
+        $this->put('/api/user/'.$user->id, $dados);
+
+        echo $this->response->content();
+
+        $this->assertResponseOk();
+
+        $resposta =  (array) json_decode($this->response->content());
+
+        $this->assertArrayHasKey('name', $resposta);
+        $this->assertArrayHasKey('email', $resposta);
+        $this->assertArrayHasKey('id', $resposta);
+
+        $this->notSeeInDatabase('users', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'id' => $user->id
+        ]);
+
+        echo "\nPASSOU POR AQUI......Teste de Alteração........\n";
+    }
+
+    public function testAllUsers()
+    {
+        $this->get('/api/users');
+        $this->assertResponseOk();
+
+        $this->seeJsonStructure([
+            '*' => [
+                'id',
+                'name',
+                'email'
+            ]
+        ]);
+
+        print_r($this->response->content());
+
+        echo "\nPASSOU POR AQUI......Teste de Lista de Usuarios........\n";
+    }
+
+    public function testDeleteUser()
+    {
+        $user = \App\User::first();
+
+        $this->delete('/api/user/'.$user->id);
+
+        $this->assertResponseOk();
+
+        $this->assertEquals("Removido com sucesso!", $this->response->content());
+
+        echo "\nPASSOU POR AQUI......Teste de Deleção........\n";
     }
 }
