@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -19,6 +20,20 @@ class UserController extends Controller
         //
     }
 
+    public function login(Request $request)
+    {
+        $dados = $request->only('email', 'password');
+
+        $usuario = User::where('email', $dados['email'])
+        ->where('password', $dados['password'])
+        ->first();
+
+        $usuario->api_token = Str::random(60);
+        $usuario->update();
+
+        return ['api_token' => $usuario->api_token];
+    }
+
     //GUARDA OBJETO DO BANCO DE DADOS
     public function store(Request $request) {
 
@@ -29,6 +44,9 @@ class UserController extends Controller
         ]);
 
         $usuario = new User($request->all());
+
+        $usuario->api_token = Str::random(60);
+
         $usuario->save();
 
         return $usuario;
@@ -51,7 +69,6 @@ class UserController extends Controller
 
         if (isset($request->all()['password'])) {
             $dados['password'] = 'required|confirmed|max:255';
-            echo "PASSOU NO IFFFFF.....................................................................";
         }
 
         $this->validate($request, $dados);
@@ -60,6 +77,7 @@ class UserController extends Controller
 
         $user->name = $request->input('name');
         $user->email = $request->input('email');
+
         if (isset($request->all()['password'])) {
             $user->password = $request->input('password');
         }
